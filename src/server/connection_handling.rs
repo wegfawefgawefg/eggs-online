@@ -95,7 +95,7 @@ pub async fn handle_connection(mut socket: TcpStream) -> tokio::io::Result<()> {
             return Ok(());
         }
 
-        let result: Result<ClientToServerMessage, _> = serde_json::from_slice(&buffer[..nbytes]);
+        let result: Result<ClientToServerMessage, _> = bincode::deserialize(&buffer[..nbytes]);
         match result {
             Ok(result) => {
                 let message_bundle = ClientToServerMessageBundle {
@@ -135,10 +135,9 @@ pub async fn continuously_transmit_any_outbound_messages(
         let clients_read = CLIENT_OUTBOUND_MAILBOXES.read().await;
         if let Some(outgoing_messages) = clients_read.get(&id) {
             if let Some(message) = outgoing_messages.pop() {
-                match serde_json::to_string(&message) {
-                    Ok(json_message) => {
-                        let message_bytes = json_message.as_bytes();
-                        socket_write_half.write_all(message_bytes).await?;
+                match bincode::serialize(&message) {
+                    Ok(binary_message) => {
+                        socket_write_half.write_all(&binary_message).await?;
                     }
                     Err(e) => {
                         eprintln!("Error serializing message: {:?}", e);

@@ -119,7 +119,7 @@ pub async fn receive_incoming_messages(
             return Ok(());
         }
 
-        let result: Result<ServerToClientMessage, _> = serde_json::from_slice(&buffer[..nbytes]);
+        let result: Result<ServerToClientMessage, _> = bincode::deserialize(&buffer[..nbytes]);
         match result {
             Ok(message) => {
                 if INCOMING_MESSAGE_QUEUE.push(message).is_err() {
@@ -147,10 +147,9 @@ pub async fn transmit_outbound_messages(
 
         // transmit any outbound messages
         if let Some(message) = OUTBOUND_MESSAGE_QUEUE.pop() {
-            match serde_json::to_string(&message) {
-                Ok(json_message) => {
-                    let message_bytes = json_message.as_bytes();
-                    socket_write_half.write_all(message_bytes).await?;
+            match bincode::serialize(&message) {
+                Ok(binary_message) => {
+                    socket_write_half.write_all(&binary_message).await?;
                 }
                 Err(e) => {
                     eprintln!("Error serializing message: {:?}", e);
