@@ -5,6 +5,8 @@ pub enum ClientToServerMessage {
     Connect,
     Disconnect,
     ChatMessage { message: String },
+    RequestToSpawnPlayer,
+    EntityPosition { entity_id: u32, pos: glam::Vec2 },
 }
 
 pub struct ClientToServerMessageBundle {

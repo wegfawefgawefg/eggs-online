@@ -1,96 +1,44 @@
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::Arc;
 
-use common::client_to_server::ClientToServerMessage;
 use crossbeam::queue::ArrayQueue;
 use glam::Vec2;
-use serde::{Deserialize, Serialize};
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
 const SERVER_ADDR: &str = "127.0.0.1:8080";
 use lazy_static::lazy_static;
-use tokio::sync::RwLock;
 
+use crate::common::client_to_server::ClientToServerMessage;
 use crate::common::server_to_client::ServerToClientMessage;
 
-mod common;
 lazy_static! {
     pub static ref INCOMING_MESSAGE_QUEUE: Arc<ArrayQueue<ServerToClientMessage>> =
         Arc::new(ArrayQueue::new(1000));
     pub static ref OUTBOUND_MESSAGE_QUEUE: Arc<ArrayQueue<ClientToServerMessage>> =
         Arc::new(ArrayQueue::new(1000));
     pub static ref SERVER_DISCONNECTED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+    pub static ref CLIENT_ID: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
 }
 
-pub struct State {
-    pub player_pos: Vec2,
-    pub player_vel: Vec2,
-}
+// #[tokio::main]
+// async fn main() -> tokio::io::Result<()> {
 
-impl State {
-    pub fn new() -> Self {
-        Self {
-            player_pos: Vec2::new(0.0, 0.0),
-            player_vel: Vec2::new(0.0, 0.0),
-        }
-    }
-}
+//     let mut state = State::new();
+//     loop {
+//         // lets send a chat message
+//         let message = ClientToServerMessage::ChatMessage {
+//             message: "Hey Man!".to_string(),
+//         };
+//         if OUTBOUND_MESSAGE_QUEUE.push(message).is_err() {
+//             eprintln!("Outbound message queue full: dropping message");
+//         }
 
-impl Default for State {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-#[tokio::main]
-async fn main() -> tokio::io::Result<()> {
-    let result = init_connection().await;
-    if let Err(e) = result {
-        eprintln!("Error connecting to server: {:?}", e);
-        return Ok(());
-    }
-    let mut state = State::new();
-    loop {
-        // lets send a chat message
-        let message = ClientToServerMessage::ChatMessage {
-            message: "Hey Man!".to_string(),
-        };
-        if OUTBOUND_MESSAGE_QUEUE.push(message).is_err() {
-            eprintln!("Outbound message queue full: dropping message");
-        }
-
-        process_message_queue();
-        step(&mut state);
-        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-    }
-}
-
-fn step(state: &mut State) {
-    state.player_pos += state.player_vel;
-}
-
-pub fn process_message_queue() {
-    while let Some(message) = INCOMING_MESSAGE_QUEUE.pop() {
-        match message {
-            ServerToClientMessage::Welcome { server_message } => {
-                println!("Server says: {}", server_message);
-            }
-            ServerToClientMessage::PlayerJoined { id } => {
-                println!("Player {} joined", id);
-            }
-            ServerToClientMessage::PlayerLeft { id } => {
-                println!("Player {} left", id);
-            }
-            ServerToClientMessage::ChatMessage { from, message } => {
-                println!("{} says: {}", from, message);
-            }
-            _ => {
-                eprintln!("Unknown message type");
-            }
-        }
-    }
-}
+//         process_message_queue();
+//         step(&mut state);
+//         tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+//     }
+// }
 
 pub async fn disconnect_from_server() {}
 
@@ -104,6 +52,7 @@ pub async fn init_connection() -> tokio::io::Result<()> {
     let mut id_buffer = [0u8; 4];
     read_half.read_exact(&mut id_buffer).await?;
     let client_id = u32::from_be_bytes(id_buffer);
+    CLIENT_ID.store(client_id, Ordering::SeqCst);
 
     tokio::spawn(receive_incoming_messages(client_id, read_half));
     tokio::spawn(transmit_outbound_messages(write_half));
