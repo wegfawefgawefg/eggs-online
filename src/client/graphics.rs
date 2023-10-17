@@ -6,8 +6,9 @@ use raylib::prelude::*;
 use super::draw::draw;
 use super::state::State;
 
-pub const WINDOW_DIMS: UVec2 = UVec2::new(1280, 720);
+// pub const WINDOW_DIMS: UVec2 = UVec2::new(1280, 720);
 pub const DIMS: UVec2 = UVec2::new(240, 160);
+pub const WINDOW_DIMS: UVec2 = UVec2::new(500, 500);
 pub const FULLSCREEN: bool = false;
 
 pub fn init_graphics() -> (RaylibHandle, RaylibThread, RenderTexture2D) {

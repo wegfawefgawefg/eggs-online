@@ -14,7 +14,7 @@ mod server;
 pub const FRAMES_PER_SECOND: u32 = 60;
 const TIMESTEP: f32 = 1.0 / FRAMES_PER_SECOND as f32;
 
-const POSITION_TRANSMIT_FREQUENCY: u32 = 15;
+const POSITION_TRANSMIT_FREQUENCY: u32 = 16;
 
 #[derive(PartialEq, Eq)]
 enum Bool {
@@ -38,12 +38,21 @@ async fn main() -> tokio::io::Result<()> {
         eprintln!("Outbound message queue full: dropping message");
     }
 
+    // request all players
+    if client::connection_handling::OUTBOUND_MESSAGE_QUEUE
+        .push(ClientToServerMessage::RequestAllPlayers)
+        .is_err()
+    {
+        eprintln!("Outbound message queue full: dropping message");
+    }
+
     let (mut rl, mut rlt, mut render_texture) = client::graphics::init_graphics();
 
     ////////////////    MAIN LOOP    ////////////////
     let mut state = client::state::State::new();
 
     let mut position_transmit_counter = POSITION_TRANSMIT_FREQUENCY;
+    let mut player_last_pos = None;
 
     while !rl.window_should_close() {
         process_events_and_input(&mut rl, &mut state);
@@ -51,9 +60,18 @@ async fn main() -> tokio::io::Result<()> {
         // state transmitting
         position_transmit_counter -= 1;
         if position_transmit_counter == 0 {
+            position_transmit_counter = POSITION_TRANSMIT_FREQUENCY;
             if let Some(player_id) = state.player_id {
                 if let Some(our_player) = state.players.get(&player_id) {
-                    println!("Sending position: {:?}", our_player.pos);
+                    if let Some(last_pos) = player_last_pos {
+                        if last_pos == our_player.pos {
+                            // println!("Not sending position: {:?}", our_player.pos);
+                            continue;
+                        }
+                    }
+                    player_last_pos = Some(our_player.pos);
+
+                    // println!("Sending position: {:?}", our_player.pos);
                     if client::connection_handling::OUTBOUND_MESSAGE_QUEUE
                         .push(ClientToServerMessage::EntityPosition {
                             entity_id: player_id,
@@ -65,8 +83,6 @@ async fn main() -> tokio::io::Result<()> {
                     }
                 }
             }
-
-            position_transmit_counter = POSITION_TRANSMIT_FREQUENCY;
         }
 
         process_message_queue(&mut state).await;

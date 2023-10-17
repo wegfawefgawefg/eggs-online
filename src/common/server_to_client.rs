@@ -1,6 +1,8 @@
 use glam::Vec2;
 use serde::{Deserialize, Serialize};
 
+use super::game_objects::Player;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ServerToClientMessage {
     Welcome {
@@ -24,5 +26,8 @@ pub enum ServerToClientMessage {
     EntityPosition {
         entity_id: u32,
         pos: Vec2,
+    },
+    AllPlayers {
+        players: Vec<Player>,
     },
 }

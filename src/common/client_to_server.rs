@@ -6,6 +6,7 @@ pub enum ClientToServerMessage {
     Disconnect,
     ChatMessage { message: String },
     RequestToSpawnPlayer,
+    RequestAllPlayers,
     EntityPosition { entity_id: u32, pos: glam::Vec2 },
 }
 

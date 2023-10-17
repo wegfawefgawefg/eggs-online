@@ -75,7 +75,7 @@ pub async fn process_message_queue(state: &mut State) {
                     entity_id,
                     Player {
                         owner_client_id,
-                        id: entity_id,
+                        entity_id,
                         pos,
                         vel: Vec2::new(0.0, 0.0),
                     },
@@ -84,6 +84,19 @@ pub async fn process_message_queue(state: &mut State) {
             ServerToClientMessage::EntityPosition { entity_id, pos } => {
                 if let Some(player) = state.players.get_mut(&entity_id) {
                     player.pos = pos;
+                }
+            }
+            ServerToClientMessage::AllPlayers { players } => {
+                for player in players {
+                    state.players.insert(
+                        player.entity_id,
+                        Player {
+                            owner_client_id: player.owner_client_id,
+                            entity_id: player.entity_id,
+                            pos: player.pos,
+                            vel: Vec2::new(0.0, 0.0),
+                        },
+                    );
                 }
             }
         }

@@ -15,6 +15,8 @@ use super::{connection_handling::INCOMING_MESSAGE_QUEUE, state::State};
 pub const FRAMES_PER_SECOND: u32 = 1;
 const TIMESTEP: f32 = 1.0 / FRAMES_PER_SECOND as f32;
 
+pub const DEBUG_PRINT_PROCESSED_MESSAGES: bool = false;
+
 pub async fn main_loop(state: &mut State) {
     let mut previous_time = Instant::now();
     loop {
@@ -94,13 +96,20 @@ pub async fn process_message_queue(state: &mut State) {
                 broadcast_to_all(outbound_message).await;
             }
             ClientToServerMessage::EntityPosition { entity_id, pos } => {
-                println!("{} sent position: {:?}", client_id, pos);
                 if let Some(player) = state.players.get_mut(&entity_id) {
                     player.pos = pos;
                 }
 
                 let outbound_message = ServerToClientMessage::EntityPosition { entity_id, pos };
                 broadcast_to_all_except(client_id, outbound_message).await;
+            }
+            ClientToServerMessage::RequestAllPlayers => {
+                println!("{} requested all players", client_id);
+
+                let players = state.players.values().cloned().collect();
+
+                let outbound_message = ServerToClientMessage::AllPlayers { players };
+                send_to_one_client(client_id, outbound_message).await;
             }
         }
     }
