@@ -14,6 +14,10 @@ name = "dumb_client"
 path = "src/dumb_client.rs"
 
 [[bin]]
+name = "dumb_client_udp"
+path = "src/dumb_client_udp.rs"
+
+[[bin]]
 name = "start_server"
 path = "src/start_server.rs"
 
@@ -27,3 +31,4 @@ legion = "0.4.0"
 raylib = "3.7.0"
 serde = {version="1.0.188", features=["derive"]}
 tokio = {version="1.32.0", features=["net", "io-util", "full"]}
+uuid = { version = "1.4.1", features = ["v4"] }

@@ -5,6 +5,9 @@ use super::game_objects::Player;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ServerToClientMessage {
+    ClientIDAssignment {
+        new_client_id: u32,
+    },
     Welcome {
         server_message: String,
     },

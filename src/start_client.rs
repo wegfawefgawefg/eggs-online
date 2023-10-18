@@ -14,7 +14,7 @@ mod server;
 pub const FRAMES_PER_SECOND: u32 = 60;
 const TIMESTEP: f32 = 1.0 / FRAMES_PER_SECOND as f32;
 
-const POSITION_TRANSMIT_FREQUENCY: u32 = 16;
+const POSITION_TRANSMIT_FREQUENCY: u32 = 10;
 
 #[derive(PartialEq, Eq)]
 enum Bool {

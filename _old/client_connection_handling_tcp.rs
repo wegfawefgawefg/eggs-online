@@ -2,8 +2,9 @@ use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::Arc;
 
 use crossbeam::queue::ArrayQueue;
-use tokio::io::{self};
-use tokio::net::UdpSocket;
+use glam::Vec2;
+use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
+use tokio::net::TcpStream;
 
 const SERVER_ADDR: &str = "127.0.0.1:8080";
 use lazy_static::lazy_static;
@@ -44,28 +45,37 @@ pub async fn disconnect_from_server() {}
 ////////////////////////    CLIENT RX/TX TASKS    ////////////////////////
 
 pub async fn init_connection() -> tokio::io::Result<()> {
-    println!("connecting");
-    let socket = UdpSocket::bind("0.0.0.0:0").await?;
-    socket.connect(SERVER_ADDR).await?;
+    let stream = TcpStream::connect(SERVER_ADDR).await?;
+    let (mut read_half, write_half) = stream.into_split();
 
-    println!("connected");
-    let a_socket = Arc::new(socket);
+    // Receive the assigned ID from the server
+    let mut id_buffer = [0u8; 4];
+    read_half.read_exact(&mut id_buffer).await?;
+    let client_id = u32::from_be_bytes(id_buffer);
+    CLIENT_ID.store(client_id, Ordering::SeqCst);
 
-    println!("spawning network tasks");
-    tokio::spawn(receive_incoming_messages(a_socket.clone()));
-    tokio::spawn(transmit_outbound_messages(a_socket.clone()));
+    tokio::spawn(receive_incoming_messages(client_id, read_half));
+    tokio::spawn(transmit_outbound_messages(write_half));
     Ok(())
 }
 
-pub async fn receive_incoming_messages(socket: Arc<UdpSocket>) -> io::Result<()> {
+pub async fn receive_incoming_messages(
+    id: u32,
+    mut socket_read_half: tokio::net::tcp::OwnedReadHalf,
+) -> io::Result<()> {
     let mut buffer = [0; 1024];
     loop {
-        let nbytes = socket.recv(&mut buffer).await?;
+        let nbytes = socket_read_half.read(&mut buffer).await?;
+        if nbytes == 0 {
+            SERVER_DISCONNECTED.store(true, Ordering::SeqCst);
+            return Ok(());
+        }
+
         let result: Result<ServerToClientMessage, _> = bincode::deserialize(&buffer[..nbytes]);
         match result {
             Ok(message) => {
                 if INCOMING_MESSAGE_QUEUE.push(message).is_err() {
-                    eprintln!("Inbound message queue full: dropping message");
+                    eprintln!("Inbound message queue full: dropping message from {}", id);
                 }
             }
             Err(e) => {
@@ -77,7 +87,9 @@ pub async fn receive_incoming_messages(socket: Arc<UdpSocket>) -> io::Result<()>
     }
 }
 
-pub async fn transmit_outbound_messages(socket: Arc<UdpSocket>) -> io::Result<()> {
+pub async fn transmit_outbound_messages(
+    mut socket_write_half: tokio::net::tcp::OwnedWriteHalf,
+) -> io::Result<()> {
     loop {
         // check for disconnect message from rx task
         if SERVER_DISCONNECTED.load(Ordering::SeqCst) {
@@ -87,10 +99,9 @@ pub async fn transmit_outbound_messages(socket: Arc<UdpSocket>) -> io::Result<()
 
         // transmit any outbound messages
         if let Some(message) = OUTBOUND_MESSAGE_QUEUE.pop() {
-            println!("Sending message: {:?}", message);
             match bincode::serialize(&message) {
                 Ok(binary_message) => {
-                    socket.send(&binary_message).await?;
+                    socket_write_half.write_all(&binary_message).await?;
                 }
                 Err(e) => {
                     eprintln!("Error serializing message: {:?}", e);

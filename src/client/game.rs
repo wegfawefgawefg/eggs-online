@@ -48,6 +48,9 @@ pub fn step(state: &mut State) {
 pub async fn process_message_queue(state: &mut State) {
     while let Some(message) = INCOMING_MESSAGE_QUEUE.pop() {
         match message {
+            ServerToClientMessage::ClientIDAssignment { new_client_id } => {
+                state.client_id = Some(new_client_id);
+            }
             ServerToClientMessage::Welcome { server_message } => {
                 println!("Server says: {}", server_message);
             }
