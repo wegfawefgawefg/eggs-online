@@ -8,10 +8,12 @@ use crate::{
         game_objects::Player,
         server_to_client::ServerToClientMessage,
     },
-    server::connection_handling::{broadcast_to_all, broadcast_to_all_except, send_to_one_client},
+    server::enque_outbound_messages::{
+        broadcast_to_all, broadcast_to_all_except, send_to_one_client,
+    },
 };
 
-use super::{connection_handling::INCOMING_MESSAGE_QUEUE, state::State};
+use super::{state::State, udp_networking::INCOMING_MESSAGE_QUEUE};
 
 pub const FRAMES_PER_SECOND: u32 = 60;
 const TIMESTEP: f32 = 1.0 / FRAMES_PER_SECOND as f32;

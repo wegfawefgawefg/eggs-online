@@ -20,25 +20,6 @@ lazy_static! {
     pub static ref CLIENT_ID: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
 }
 
-// #[tokio::main]
-// async fn main() -> tokio::io::Result<()> {
-
-//     let mut state = State::new();
-//     loop {
-//         // lets send a chat message
-//         let message = ClientToServerMessage::ChatMessage {
-//             message: "Hey Man!".to_string(),
-//         };
-//         if OUTBOUND_MESSAGE_QUEUE.push(message).is_err() {
-//             eprintln!("Outbound message queue full: dropping message");
-//         }
-
-//         process_message_queue();
-//         step(&mut state);
-//         tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-//     }
-// }
-
 pub async fn disconnect_from_server() {}
 
 ////////////////////////    CLIENT RX/TX TASKS    ////////////////////////

@@ -24,14 +24,14 @@ enum Bool {
 
 #[tokio::main]
 async fn main() -> tokio::io::Result<()> {
-    let result = client::connection_handling::init_connection().await;
+    let result = client::udp_networking::init_connection().await;
     if let Err(e) = result {
         eprintln!("Error connecting to server: {:?}", e);
         return Ok(());
     }
 
     // request a new player
-    if client::connection_handling::OUTBOUND_MESSAGE_QUEUE
+    if client::udp_networking::OUTBOUND_MESSAGE_QUEUE
         .push(ClientToServerMessage::RequestToSpawnPlayer)
         .is_err()
     {
@@ -39,7 +39,7 @@ async fn main() -> tokio::io::Result<()> {
     }
 
     // request all players
-    if client::connection_handling::OUTBOUND_MESSAGE_QUEUE
+    if client::udp_networking::OUTBOUND_MESSAGE_QUEUE
         .push(ClientToServerMessage::RequestAllPlayers)
         .is_err()
     {
@@ -65,7 +65,7 @@ async fn main() -> tokio::io::Result<()> {
                 for player in state.players.values() {
                     if let Some(client_id) = state.client_id {
                         if player.owner_client_id == client_id
-                            && client::connection_handling::OUTBOUND_MESSAGE_QUEUE
+                            && client::udp_networking::OUTBOUND_MESSAGE_QUEUE
                                 .push(ClientToServerMessage::EntityPosition {
                                     entity_id: player.entity_id,
                                     pos: player.pos,

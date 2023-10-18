@@ -9,7 +9,7 @@ eggs over ez
 
 
 ## TODO
-- keepalive
+- keepalive on udp
 - abstract server so game state and message responses can be provided as callbacks
 
 ## notes

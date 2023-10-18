@@ -5,8 +5,8 @@ use glam::Vec2;
 use crate::common::{game_objects::Player, server_to_client::ServerToClientMessage};
 
 use super::{
-    connection_handling::{CLIENT_ID, INCOMING_MESSAGE_QUEUE},
     state::State,
+    udp_networking::{CLIENT_ID, INCOMING_MESSAGE_QUEUE},
 };
 
 pub fn step(state: &mut State) {
