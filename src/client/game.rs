@@ -50,15 +50,16 @@ pub async fn process_message_queue(state: &mut State) {
         match message {
             ServerToClientMessage::ClientIDAssignment { new_client_id } => {
                 state.client_id = Some(new_client_id);
+                println!("new id assigned: {}", new_client_id);
             }
             ServerToClientMessage::Welcome { server_message } => {
                 println!("Server says: {}", server_message);
             }
-            ServerToClientMessage::PlayerJoined { id } => {
-                println!("Player {} joined", id);
+            ServerToClientMessage::ClientJoined { id } => {
+                println!("Client {} joined", id);
             }
-            ServerToClientMessage::PlayerLeft { id } => {
-                println!("Player {} left", id);
+            ServerToClientMessage::ClientLeft { id } => {
+                println!("Client {} left", id);
             }
             ServerToClientMessage::ChatMessage { from, message } => {
                 println!("{} says: {}", from, message);
@@ -70,9 +71,6 @@ pub async fn process_message_queue(state: &mut State) {
             } => {
                 // if the owner_client_id is our id, set out state.player_id to Some(owner_client_id)
                 let our_client_id = CLIENT_ID.load(Ordering::SeqCst);
-                if our_client_id == owner_client_id {
-                    state.player_id = Some(entity_id);
-                }
 
                 state.players.insert(
                     entity_id,
@@ -83,6 +81,8 @@ pub async fn process_message_queue(state: &mut State) {
                         vel: Vec2::new(0.0, 0.0),
                     },
                 );
+
+                println!("player spawned {}", entity_id);
             }
             ServerToClientMessage::EntityPosition { entity_id, pos } => {
                 if let Some(player) = state.players.get_mut(&entity_id) {

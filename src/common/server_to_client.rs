@@ -11,10 +11,10 @@ pub enum ServerToClientMessage {
     Welcome {
         server_message: String,
     },
-    PlayerJoined {
+    ClientJoined {
         id: u32,
     },
-    PlayerLeft {
+    ClientLeft {
         id: u32,
     },
     ChatMessage {

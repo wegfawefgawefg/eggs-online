@@ -10,6 +10,7 @@ pub enum ClientToServerMessage {
     EntityPosition { entity_id: u32, pos: glam::Vec2 },
 }
 
+#[derive(Debug, Clone)]
 pub struct ClientToServerMessageBundle {
     pub client_id: u32,
     pub message: ClientToServerMessage,

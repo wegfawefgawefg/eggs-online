@@ -25,7 +25,7 @@ pub type ClientMessageQueue = Arc<ArrayQueue<ServerToClientMessage>>;
 
 lazy_static! {
     pub static ref INCOMING_MESSAGE_QUEUE: Arc<ArrayQueue<ClientToServerMessageBundle>> =
-        Arc::new(ArrayQueue::new(1000));
+        Arc::new(ArrayQueue::new(32));
     pub static ref NEXT_CONNECTION_ID: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
     pub static ref CLIENT_OUTBOUND_MAILBOXES: RwLock<HashMap<u32, ClientMessageQueue>> =
         RwLock::new(HashMap::new());
@@ -90,6 +90,7 @@ pub async fn continuously_read_any_inbound_messages(socket: Arc<UdpSocket>) -> i
                 eprintln!("Error parsing client data: {:?}", e);
             }
         }
+        // tokio::time::sleep(tokio::time::Duration::from_millis(1)).await;
     }
 }
 
@@ -132,7 +133,7 @@ pub async fn continuously_transmit_any_outbound_messages(socket: Arc<UdpSocket>)
                 }
             }
         }
-        // tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        // tokio::time::sleep(tokio::time::Duration::from_millis(1)).await;
     }
 }
 

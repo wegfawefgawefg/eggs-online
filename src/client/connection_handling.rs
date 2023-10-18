@@ -13,9 +13,9 @@ use crate::common::server_to_client::ServerToClientMessage;
 
 lazy_static! {
     pub static ref INCOMING_MESSAGE_QUEUE: Arc<ArrayQueue<ServerToClientMessage>> =
-        Arc::new(ArrayQueue::new(1000));
+        Arc::new(ArrayQueue::new(64));
     pub static ref OUTBOUND_MESSAGE_QUEUE: Arc<ArrayQueue<ClientToServerMessage>> =
-        Arc::new(ArrayQueue::new(1000));
+        Arc::new(ArrayQueue::new(64));
     pub static ref SERVER_DISCONNECTED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
     pub static ref CLIENT_ID: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
 }
@@ -73,7 +73,7 @@ pub async fn receive_incoming_messages(socket: Arc<UdpSocket>) -> io::Result<()>
             }
         }
 
-        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        // tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
     }
 }
 
@@ -98,6 +98,6 @@ pub async fn transmit_outbound_messages(socket: Arc<UdpSocket>) -> io::Result<()
             }
         }
 
-        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        // tokio::time::sleep(tokio::time::Duration::from_millis(1)).await;
     }
 }

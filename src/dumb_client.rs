@@ -78,10 +78,10 @@ pub fn process_message_queue() {
             ServerToClientMessage::Welcome { server_message } => {
                 println!("Server says: {}", server_message);
             }
-            ServerToClientMessage::PlayerJoined { id } => {
+            ServerToClientMessage::ClientJoined { id } => {
                 println!("Player {} joined", id);
             }
-            ServerToClientMessage::PlayerLeft { id } => {
+            ServerToClientMessage::ClientLeft { id } => {
                 println!("Player {} left", id);
             }
             ServerToClientMessage::ChatMessage { from, message } => {
