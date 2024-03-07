@@ -12,11 +12,11 @@ use lazy_static::lazy_static;
 use tokio::sync::RwLock;
 
 use crate::{
-    common::{
+    server_udp_networking::{CLIENT_DISCONNECTED, INCOMING_MESSAGE_QUEUE},
+    {
         client_to_server::{ClientToServerMessage, ClientToServerMessageBundle},
         server_to_client::ServerToClientMessage,
     },
-    server::udp_networking::{CLIENT_DISCONNECTED, INCOMING_MESSAGE_QUEUE},
 };
 
 pub type ClientMessageQueue = Arc<ArrayQueue<ServerToClientMessage>>;

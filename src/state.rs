@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::common::game_objects::Player;
+use crate::game_objects::Player;
 
 pub struct State {
     pub running: bool,

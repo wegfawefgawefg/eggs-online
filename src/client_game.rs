@@ -2,12 +2,10 @@ use std::sync::atomic::Ordering;
 
 use glam::Vec2;
 
-use crate::common::{game_objects::Player, server_to_client::ServerToClientMessage};
+use crate::{game_objects::Player, server_to_client::ServerToClientMessage};
 
-use super::{
-    state::State,
-    udp_networking::{CLIENT_ID, INCOMING_MESSAGE_QUEUE},
-};
+use crate::client_udp_networking::{CLIENT_ID, INCOMING_MESSAGE_QUEUE};
+use crate::state::State;
 
 pub fn step(state: &mut State) {
     for (_, player) in state.players.iter_mut() {

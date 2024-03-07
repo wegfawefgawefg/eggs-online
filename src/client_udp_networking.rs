@@ -8,8 +8,8 @@ use tokio::net::UdpSocket;
 const SERVER_ADDR: &str = "127.0.0.1:8080";
 use lazy_static::lazy_static;
 
-use crate::common::client_to_server::ClientToServerMessage;
-use crate::common::server_to_client::ServerToClientMessage;
+use crate::client_to_server::ClientToServerMessage;
+use crate::server_to_client::ServerToClientMessage;
 
 lazy_static! {
     pub static ref INCOMING_MESSAGE_QUEUE: Arc<ArrayQueue<ServerToClientMessage>> =

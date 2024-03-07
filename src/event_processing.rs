@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use super::state::State;
+use crate::state::State;
 
 const PLAYER_SPEED: f32 = 1.0;
 

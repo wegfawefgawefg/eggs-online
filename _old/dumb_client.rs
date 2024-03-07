@@ -1,21 +1,14 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-use common::client_to_server::ClientToServerMessage;
 use crossbeam::queue::ArrayQueue;
 use glam::Vec2;
-use serde::{Deserialize, Serialize};
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::UdpSocket;
 
 const SERVER_ADDR: &str = "127.0.0.1:8080";
 use lazy_static::lazy_static;
-use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use crate::common::server_to_client::ServerToClientMessage;
-
-mod common;
 lazy_static! {
     pub static ref INCOMING_MESSAGE_QUEUE: Arc<ArrayQueue<ServerToClientMessage>> =
         Arc::new(ArrayQueue::new(1000));

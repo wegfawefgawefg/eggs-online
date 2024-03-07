@@ -12,16 +12,13 @@ use tokio::{
     sync::RwLock,
 };
 
-use super::{
-    client_bookkeeping::{CLIENT_ID_TO_SOCKET_ADDRESS, CLIENT_OUTBOUND_MAILBOXES},
-    settings::SERVER_ADDR,
+use crate::{
+    bookkeeping::{add_client, SOCKET_ADDRESS_TO_CLIENT_ID},
+    client_to_server::{ClientToServerMessage, ClientToServerMessageBundle},
 };
 use crate::{
-    common::{
-        client_to_server::{ClientToServerMessage, ClientToServerMessageBundle},
-        server_to_client::ServerToClientMessage,
-    },
-    server::client_bookkeeping::{add_client, SOCKET_ADDRESS_TO_CLIENT_ID},
+    bookkeeping::{CLIENT_ID_TO_SOCKET_ADDRESS, CLIENT_OUTBOUND_MAILBOXES},
+    settings::SERVER_ADDR,
 };
 
 lazy_static! {

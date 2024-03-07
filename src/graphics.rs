@@ -1,10 +1,9 @@
-use glam::Vec2;
 use glam::{IVec2, UVec2};
 use raylib::ffi::SetTraceLogLevel;
 use raylib::prelude::*;
 
-use super::draw::draw;
-use super::state::State;
+use crate::draw::draw;
+use crate::state::State;
 
 // pub const WINDOW_DIMS: UVec2 = UVec2::new(1280, 720);
 pub const DIMS: UVec2 = UVec2::new(240, 160);

@@ -1,6 +1,6 @@
-use crate::common::server_to_client::ServerToClientMessage;
+use crate::server_to_client::ServerToClientMessage;
 
-use super::client_bookkeeping::CLIENT_OUTBOUND_MAILBOXES;
+use crate::bookkeeping::CLIENT_OUTBOUND_MAILBOXES;
 
 ////////////////////////    ENQUEUE OUTBOUND MESSAGES    ////////////////////////
 pub async fn send_to_one_client(client_id: u32, message: ServerToClientMessage) {

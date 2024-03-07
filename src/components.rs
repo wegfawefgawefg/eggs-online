@@ -8,9 +8,9 @@ pub struct CTransform {
     pub rot: Vec2,
 }
 
-pub struct Color {
-    pub color: Color,
-}
+/*  foreign components:
+    raylib color
+*/
 
 #[derive(Clone, Copy)]
 pub struct Shape {
@@ -22,6 +22,11 @@ pub struct Physics {
     pub vel: Vec2,
 }
 
+pub struct OwnerClient {
+    pub client_id: u32,
+}
+
+//////// THIS IS FOR THE SERVER //////////
 pub struct RegistryRecord {
     pub client_id: u32,
     pub entity: Entity,

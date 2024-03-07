@@ -3,24 +3,22 @@ use std::{collections::HashMap, time::Instant};
 use glam::Vec2;
 
 use crate::{
-    common::{
+    enque_outbound_messages::{broadcast_to_all, broadcast_to_all_except, send_to_one_client},
+    {
         client_to_server::{ClientToServerMessage, ClientToServerMessageBundle},
         game_objects::Player,
         server_to_client::ServerToClientMessage,
     },
-    server::enque_outbound_messages::{
-        broadcast_to_all, broadcast_to_all_except, send_to_one_client,
-    },
 };
 
-use super::{state::State, udp_networking::INCOMING_MESSAGE_QUEUE};
+use super::{server_state::ServerState, server_udp_networking::INCOMING_MESSAGE_QUEUE};
 
 pub const FRAMES_PER_SECOND: u32 = 60;
 const TIMESTEP: f32 = 1.0 / FRAMES_PER_SECOND as f32;
 
 pub const DEBUG_PRINT_PROCESSED_MESSAGES: bool = false;
 
-pub async fn main_loop(state: &mut State) {
+pub async fn main_loop(state: &mut ServerState) {
     let mut previous_time = Instant::now();
     loop {
         process_message_queue(state).await;
@@ -39,14 +37,14 @@ pub async fn main_loop(state: &mut State) {
     }
 }
 
-pub fn step(state: &mut State) {
+pub fn step(state: &mut ServerState) {
     for (_, player) in state.players.iter_mut() {
         player.step();
     }
     // state.print_state();
 }
 
-pub async fn process_message_queue(state: &mut State) {
+pub async fn process_message_queue(state: &mut ServerState) {
     // prune_latest_only_messages().await;
 
     while let Some(message_bundle) = INCOMING_MESSAGE_QUEUE.pop() {

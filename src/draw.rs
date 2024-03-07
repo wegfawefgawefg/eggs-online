@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use super::state::State;
+use crate::state::State;
 
 pub fn draw(state: &State, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
     d.draw_text("Multiplayer!", 12, 12, 12, Color::WHITE);
