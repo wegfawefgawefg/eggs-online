@@ -27,12 +27,10 @@ pub fn init_graphics() -> (RaylibHandle, RaylibThread, RenderTexture2D) {
     let mouse_scale = DIMS.as_vec2() / WINDOW_DIMS.as_vec2();
     rl.set_mouse_scale(mouse_scale.x, mouse_scale.y);
 
-    let mut render_texture = rl
-        .load_render_texture(&rlt, DIMS.x, DIMS.y)
-        .unwrap_or_else(|e| {
-            println!("Error creating render texture: {}", e);
-            std::process::exit(1);
-        });
+    let mut render_texture = rl.load_render_texture(DIMS.x, DIMS.y).unwrap_or_else(|e| {
+        println!("Error creating render texture: {}", e);
+        std::process::exit(1);
+    });
 
     (rl, rlt, render_texture)
 }

@@ -7,14 +7,6 @@ pub fn draw(state: &State, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
     let mouse_pos = d.get_mouse_position();
     d.draw_circle(mouse_pos.x as i32, mouse_pos.y as i32, 6.0, Color::GREEN);
 
-    // render the player
-    // d.draw_circle(
-    //     state.player_pos.x as i32,
-    //     state.player_pos.y as i32,
-    //     6.0,
-    //     Color::BLUE,
-    // );
-
     // render all players
     for (_, player) in state.players.iter() {
         // color is a hash of the player id
