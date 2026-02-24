@@ -1,6 +1,19 @@
 # eggs-online
 eggs over ez
 
+## archive
+This repo was a small Rust multiplayer sandbox, mostly for experimenting with client/server netcode and simple rendering.
+
+What I was making/playing around with:
+- UDP client/server messaging in `tokio`
+- player spawn/sync/position relay
+- basic local movement input (WASD)
+- simple raylib rendering (circles/text), not a full game loop with win/lose mechanics
+
+Timeline:
+- first commit: `047f174` on 2023-10-07 03:01:29 -0500 (`Initial commit`)
+- latest commit: `15c70b0` on 2026-02-24 17:40:37 +0900 (`apparently fix?`)
+
 ## TODONE
 - server can handle arbitrary connection numbers
 - server is relay with message churn
