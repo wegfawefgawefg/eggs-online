@@ -10,6 +10,12 @@ What I was making/playing around with:
 - basic local movement input (WASD)
 - simple raylib rendering (circles/text), not a full game loop with win/lose mechanics
 
+## screenshot
+![running client window](screenshots/client-window.png)
+
+## implementation notes
+- rough edges and architectural issues are documented in `docs/implementation-issues.md`
+
 Timeline:
 - first commit: `047f174` on 2023-10-07 03:01:29 -0500 (`Initial commit`)
 - latest commit: `15c70b0` on 2026-02-24 17:40:37 +0900 (`apparently fix?`)
